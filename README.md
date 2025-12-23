@@ -1,134 +1,121 @@
-Project Overview-------
+# 🤖 Q&A Support Bot
 
-This project implements a Q&A Support Bot using Retrieval Augmented Generation (RAG).
-The bot crawls a website, extracts and cleans content, chunks the text, generates embeddings, stores them in a vector database, and answers user questions only from the crawled content.
+A powerful **Retrieval-Augmented Generation (RAG)** application built with **FastAPI** and **LangChain**. This bot crawls websites, processes content, and answers user questions using accurate, source-backed context.
 
-The system is built using:
+## 🚀 Features
 
-FastAPI for REST APIs
-LangChain for RAG pipeline
-OpenAI Embeddings
-ChromaDB for vector storage
+- **🕷️ Smart Crawling**: recursively crawls websites to gather knowledge (configured for depth and page limits).
+- **🧹 Intelligent Extraction**: cleans generic HTML boilerplate (navbars, footers) to extract only meaningful text.
+- **📦 Efficient Chunking**: splits text into optimal chunks for embedding using overlapping windows.
+- **🧠 Vector Search**: uses **ChromaDB** and **OpenAI Embeddings** to store and retrieve semantic context.
+- **💡 Contextual Answers**: Generates precise answers using **GPT-4o-mini**, strictly based on the retrieved documentation.
+- **🔌 REST API**: Fully functional endpoints for managing the knowledge base and querying.
 
-Architecture Overview-------
+## 🛠️ Tech Stack
 
-Crawling – Crawl internal pages of a given website
-Text Extraction – Clean HTML to visible text
-Chunking – Split text into overlapping chunks
-Embeddings – Convert chunks into vectors
-Vector Storage – Store vectors in ChromaDB
-Retrieval + Generation – Retrieve relevant chunks and generate answers
+- **Framework**: [FastAPI](https://fastapi.tiangolo.com/)
+- **LLM Orchestration**: [LangChain](https://python.langchain.com/)
+- **Vector Database**: [ChromaDB](https://www.trychroma.com/)
+- **AI Models**: OpenAI (Embeddings & GPT-4)
+- **Utilities**: BeautifulSoup4, Tiktoken
 
-Setup Instructions------
-1.Clone the repository
-git clone <repo-url>
-cd Q&A-support-Bot
+---
 
-2.Create and activate virtual environment
+## 📂 Project Structure
+
+```bash
+.
+├── API.py                 # 🚀 Main FastAPI entry point
+├── crawling.py            # 🕸️ Web crawler logic (RecursiveUrlLoader)
+├── text_extraction.py     # 🧹 HTML cleaning and text extraction
+├── chunking.py            # 🧩 Text splitting/chunking logic
+├── embeddings.py          # 🗄️ Vector store indexing (ChromaDB)
+├── retrieval.py           # 🔍 Search, retrieval, and answer generation
+├── memory.py              # 🧠 Conversation history management
+├── requirements.txt       # 📦 Project dependencies
+└── README.md              # 📄 This documentation
+```
+
+---
+
+## ⚡ Getting Started
+
+### 1. Prerequisites
+
+- Python 3.9+
+- An OpenAI API Key
+
+### 2. Installation
+
+Clone the repository and install dependencies:
+
+```bash
+# Create a virtual environment
 python -m venv .venv
-.\.venv\Scripts\Activate.ps1   # Windows
 
-3.Instal l dependencies
+# Activate the virtual environment
+# Windows:
+.venv\Scripts\activate
+# Mac/Linux:
+source .venv/bin/activate
+
+# Install dependencies
 pip install -r requirements.txt
+```
 
-4️.Set environment variables
+### 3. Environment Setup
 
-Create a .env file:
+Create a `.env` file in the root directory:
 
-OPENAI_API_KEY=your_openai_api_key_here
+```env
+OPENAI_API_KEY=sk-your-api-key-here
+```
 
-Running the Application
-Start FastAPI server
-uvicorn api:app --reload
+---
 
+## 🏃 Usage
 
-Server runs at:
+Start the FastAPI server:
 
-http://127.0.0.1:8000
+```bash
+uvicorn API:app --reload
+```
 
+The server will start at `http://127.0.0.1:8000`.
 
-Swagger UI:
+### 📖 API Endpoints
 
-http://127.0.0.1:8000/docs
+#### 1. Populate Knowledge Base (`/crawl`)
 
-Crawling the Website
-Endpoint
+Crawls a website and builds the vector index.
 
-POST /crawl
-
-Description
-
-Crawls internal pages of a website
-
-Extracts and cleans text
-
-Chunks content
-
-Generates embeddings
-
-Indexes everything into the vector database
-
-Example Request (Swagger / Postman)
+**POST** `/crawl`
+```json
 {
-  "baseUrl": "https://medlineplus.gov/diabetes.html",
-  "maxDepth": 1,
-  "maxPages": 15,
-  "allowedPathPrefixes": ["/diabetes", "/ency/article/"],
-  "rebuildIndex": true
+  "baseUrl": "https://example.com/docs",
+  "maxDepth": 2,
+  "maxPages": 10
 }
+```
 
-Example Response
+#### 2. Ask a Question (`/ask`)
+
+Queries the bot.
+
+**POST** `/ask`
+```json
 {
-  "status": "Crawl and indexing completed successfully"
-}
-
-Asking Questions
-Endpoint
-
-POST /ask
-
-Description
-
-Embeds the user question
-
-Retrieves top relevant chunks
-
-Generates an answer using only retrieved context
-
-Returns answer + source URLs
-
-Example Request
-{
-  "question": "What is diabetes?",
+  "question": "How do I install the SDK?",
   "k": 5
 }
+```
 
-Example Response
-{
-  "question": "What is diabetes?",
-  "answer": "Diabetes is a condition in which blood glucose levels are too high...",
-  "sources": [
-    "https://medlineplus.gov/diabetes.html",
-    "https://medlineplus.gov/diabetestype2.html"
-  ]
-}
+### 📄 API Documentation
 
-Example Questions to Try-----
+Visit `http://127.0.0.1:8000/docs` for the interactive Swagger UI to test endpoints directly in your browser.
 
-What is diabetes?
+---
 
-What are symptoms of type 2 diabetes?
+## 🤝 Contributing
 
-What complications can diabetes cause?
-
-How is diabetes treated?
-
-Difference between type 1 and type 2 diabetes?
-
-
-
-Future Improvements----
-
-
-Support for PDFs and dynamic websites
-
+Contributions are welcome! Please feel free to submit a Pull Request.
